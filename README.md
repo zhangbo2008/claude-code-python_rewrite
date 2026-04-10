@@ -3,7 +3,10 @@
 2. python -m src.cli          # 启动 REPL
 # 下面开始读这个代码.学习claudecode 的harness思路.
 
-
+1.首先运行counter.py 能看到代码行数:
+# 统计一下这个python版本的claudecode 的代码行数
+# 总代码行数: 17781
+绝对能分析完了.
 
 
 
