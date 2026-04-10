@@ -1,7 +1,7 @@
 使用方法:
-1. 跟README.md同级目录下运行:  python -m src.cli login
-
-
+1. 跟README.md同级目录下运行:  python -m src.cli login # 这一步我已经配置号智普免费大模型api了. 用的zhipu 4.7 flash版本, 所以这边一步不需要配置也可以运行, 也可以配置成自己的模型.
+2. python -m src.cli          # 启动 REPL
+# 下面开始读这个代码.学习claudecode 的harness思路.
 
 
 
