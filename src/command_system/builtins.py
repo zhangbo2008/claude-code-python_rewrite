@@ -615,7 +615,7 @@ INIT_COMMAND = PromptCommand(
 )
 
 
-# Synchronous versions for REPL integration
+# Synchronous versions for REPL integration # 执行命令.
 def execute_command_sync(cmd_name: str, args: str, context: CommandContext) -> tuple[bool, str | None, str | None]:
     """
     Execute a command synchronously.

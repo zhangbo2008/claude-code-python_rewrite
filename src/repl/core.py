@@ -113,7 +113,7 @@ class ClawdREPL:
             self.console.print("Run [bold]clawd login[/bold] to configure.")
             sys.exit(1)
 
-        # Initialize provider
+        # Initialize provider 初始化大模型提供商
         provider_class = get_provider_class(provider_name)
         self.provider = provider_class(
             api_key=config["api_key"],
@@ -121,21 +121,21 @@ class ClawdREPL:
             model=config.get("default_model")
         )
 
-        # Create session
+        # Create session 创建会话
         self.session = Session.create(
             provider_name,
             self.provider.model
         )
 
-        self.tool_registry = build_default_registry()
-        self.tool_context = ToolContext(workspace_root=Path.cwd())
-        self.tool_context.ask_user = self._ask_user_questions
+        self.tool_registry = build_default_registry() # 加载所有的tools函数.
+        self.tool_context = ToolContext(workspace_root=Path.cwd()) # 工作目录上下文给tools函数.
+        self.tool_context.ask_user = self._ask_user_questions # 配置哪些问题需要人工干预.
         # Permission handler with status control for proper input handling
         self._current_status = None
         self.tool_context.permission_handler = self._handle_permission_request
 
         # Original built-in commands - define this FIRST!
-        self._original_built_ins = [
+        self._original_built_ins = [ # 原始的命令
             "/",
             "/help",
             "/exit",
@@ -165,7 +165,7 @@ class ClawdREPL:
 
         # Key bindings for multiline
         self.bindings = KeyBindings()
-        if hasattr(self.bindings, "add"):
+        if hasattr(self.bindings, "add"): # 添加一个key binding，当用户输入/时，自动补/
             @self.bindings.add("/")  # type: ignore[attr-defined]
             def _show_slash_completions(event):  # type: ignore[no-untyped-def]
                 buf = event.current_buffer
@@ -184,7 +184,7 @@ class ClawdREPL:
             complete_while_typing=True,
         )
 
-    def _ask_user_questions(self, questions: list[dict]) -> dict[str, str]:
+    def _ask_user_questions(self, questions: list[dict]) -> dict[str, str]:# 询问用户问题, 给用户一些选型来选择, 用户选完之后大模型会根据用户选择来执行操作.
         # Stop the Rich status spinner if running, so we can get clean input
         if self._current_status is not None:
             try:
@@ -197,7 +197,7 @@ class ClawdREPL:
             question_text = str(q.get("question", "")).strip()
             options = q.get("options") or []
             multi = bool(q.get("multiSelect", False))
-            if not question_text or not isinstance(options, list) or len(options) < 2:
+            if not question_text or not isinstance(options, list) or len(options) < 2: # 选择小于2个的就跳过. 因为如果选择只有一个, 直接就大模型选这个了.别用用户了.
                 continue
 
             self.console.print(f"\n[bold]{question_text}[/bold]")
@@ -340,7 +340,7 @@ class ClawdREPL:
         self.console.print(f"[dim]Could not enable {setting_name}.[/dim]")
 
     def _init_command_system(self):
-        """Initialize the new command system."""
+        """Initialize the new command system.""" # 给命令行添加更多功能.
         # Also register to global registry so execute_command_async can find commands
         register_builtin_commands(None)  # None = use global registry
 
@@ -349,11 +349,11 @@ class ClawdREPL:
         register_builtin_commands(self.command_registry)
 
         # Create cost tracker and history
-        self.cost_tracker = CostTracker()
-        self.history_log = HistoryLog()
+        self.cost_tracker = CostTracker() # 成本跟踪器.
+        self.history_log = HistoryLog() # 历史记录日志.
 
         # Create command context
-        self.command_context = create_command_context(
+        self.command_context = create_command_context( # 执行命令的上下文.
             workspace_root=Path.cwd(),
             conversation=self.session.conversation,
             cost_tracker=self.cost_tracker,
