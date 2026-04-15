@@ -13,6 +13,7 @@ src\cli.py  199行会先读取大模型提供商.-->config.py:59 读取配置文
 
 看src\repl\core.py 
 ClawdREPL类是 命令行交互的类.
+618行是run函数, 运行REPL.
 
 src\command_system\registry.py   命令的注册器, 也是管理器.可以注册命令, 查找命令, 列出命令等.这套代码使用命令执行时候, 先去这个命令管理器里面去搜索命令, 然后再执行命令.
 

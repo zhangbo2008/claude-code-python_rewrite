@@ -206,14 +206,14 @@ class ClawdREPL:
                 label = str((opt or {}).get("label", "")).strip()
                 desc = str((opt or {}).get("description", "")).strip()
                 labels.append(label)
-                self.console.print(f"  {i}. {label}  [dim]{desc}[/dim]")
+                self.console.print(f"  {i}. {label}  [dim]{desc}[/dim]") # 打印option里面的标签和描述.
             other_idx = len(labels) + 1
             self.console.print(f"  {other_idx}. Other  [dim]Provide custom text[/dim]")
 
             prompt = "Select (comma-separated) > " if multi else "Select > "
             raw = input(prompt).strip()
             if not raw:
-                choice_str = "1"
+                choice_str = "1" # 用户没输入, 就默认选第一个选项.
             else:
                 choice_str = raw
 
@@ -232,7 +232,7 @@ class ClawdREPL:
                         selected.append(free)
                     continue
                 if 1 <= idx <= len(labels):
-                    selected.append(labels[idx - 1])
+                    selected.append(labels[idx - 1]) # 添加用户选择的索引.
             if not selected:
                 selected = [labels[0]]
             answers[question_text] = ", ".join(selected) if multi else selected[0]
@@ -240,7 +240,7 @@ class ClawdREPL:
         # Restart spinner after getting answers
         if self._current_status is not None:
             try:
-                self._current_status.start()
+                self._current_status.start() # 重新启动问答.
             except Exception:
                 pass
 
@@ -363,7 +363,7 @@ class ClawdREPL:
         # Merge new commands with built-in list for completion
         self._update_built_in_commands_with_command_system()
 
-    def _update_built_in_commands_with_command_system(self):
+    def _update_built_in_commands_with_command_system(self):# 把注册的命令添加到内置命令列表中.
         """Update the built-in commands list with commands from the new system."""
         # Start with original built-ins
         self._built_in_commands = list(self._original_built_ins)
@@ -387,7 +387,7 @@ class ClawdREPL:
 
         Returns:
             Tuple of (handled: bool, result_text: str | None)
-        """
+        """# 执行系统命令.
         try:
             success, result_text, error = execute_command_sync(
                 command, args, self.command_context
@@ -447,7 +447,7 @@ class ClawdREPL:
 
         return False
 
-    def _get_slash_command_words(self) -> list[str]:
+    def _get_slash_command_words(self) -> list[str]: # 获取所有命令的名称. slash_command是所有的命令.
         words = list(self._built_in_commands)
         try:
             from src.skills.loader import get_all_skills
@@ -567,7 +567,7 @@ class ClawdREPL:
         tail = max(1, limit - head - 1)
         return f"{text[:head]}…{text[-tail:]}"
 
-    def _print_startup_header(self):
+    def _print_startup_header(self): # 打印启动头.
         from src import __version__
 
         display_path = self._display_cwd()
@@ -615,13 +615,13 @@ class ClawdREPL:
         self.console.print(header)
         self.console.print()
 
-    def run(self):
+    def run(self): # 运行REPL.
         """Run the REPL."""
         self._print_startup_header()
 
         while True:
             try:
-                self._refresh_completer()
+                self._refresh_completer() # 刷新补全工具, 读取命令,然后建立补全工具.
                 # Dynamic prompt based on multiline mode
                 # Using '❯' for a modern feel
                 prompt_text = '... ' if self.multiline_mode else '❯ '
@@ -655,7 +655,7 @@ class ClawdREPL:
         """Handle slash commands."""
         raw = command.strip()
         if raw == "/":
-            self._show_slash_palette()
+            self._show_slash_palette() # 显示所有命令.
             return
         if raw.startswith("/") and " " not in raw and raw.lower() not in (c.lower() for c in self._built_in_commands):
             query = raw[1:]
@@ -703,10 +703,10 @@ class ClawdREPL:
                     self.console.print(f"[red]Error executing /init: {e}[/red]")
                 return
 
-            if cmd_name not in special_commands:
+            if cmd_name not in special_commands: # 特殊指令.
                 # Try to execute via new command system
                 # First try sync path for LocalCommand (faster)
-                try:
+                try: # 先试用同步的方式调用.
                     handled, result_text = self._try_execute_new_command(cmd_name, args)
                     if handled:
                         if result_text:
@@ -721,7 +721,7 @@ class ClawdREPL:
                 # Run in a new event loop since we're in a sync context
                 try:
                     import concurrent.futures
-                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                    with concurrent.futures.ThreadPoolExecutor() as executor:# 这个方法可以让同步函数调用异步代码.
                         future = executor.submit(
                             asyncio.run,
                             self._try_execute_command_async(cmd_name, args)
@@ -766,7 +766,7 @@ class ClawdREPL:
                     self.console.print(f"[red]Invalid JSON input: {e}[/red]")
                     return
             try:
-                result = self.tool_registry.dispatch(ToolCall(name=name, input=payload), self.tool_context)
+                result = self.tool_registry.dispatch(ToolCall(name=name, input=payload), self.tool_context) # 调用工具.
             except Exception as e:
                 self.console.print(f"[red]Tool error: {e}[/red]")
                 return
@@ -880,11 +880,11 @@ class ClawdREPL:
                     return
             self.console.print(f"[red]Unknown command: {command}[/red]")
 
-    def _try_run_skill_slash(self, raw: str) -> bool:
+    def _try_run_skill_slash(self, raw: str) -> bool: # 尝能运行技能指令.如果用户使用/xxxx 参数来调用. 先去skill注册表里面查找对应的技能.尝试使用.:900行.
         text = raw.strip()
         if not text.startswith("/"):
             return False
-        body = text[1:]
+        body = text[1:] # 去掉开头的 /，拿到后面的内容（比如 /test → test）
         if not body:
             return False
         if body.split(maxsplit=1)[0].lower() in {c.lstrip("/").lower() for c in self._built_in_commands if c != "/"}:
@@ -897,7 +897,7 @@ class ClawdREPL:
             return False
 
         try:
-            result = self.tool_registry.dispatch(
+            result = self.tool_registry.dispatch( # 调度工具注册表，执行对应的技能.
                 ToolCall(name="Skill", input={"skill": skill_name, "args": args}),
                 self.tool_context,
             )
@@ -910,7 +910,7 @@ class ClawdREPL:
             err = payload.get("error") if isinstance(payload.get("error"), str) else "Unknown skill error"
             self.console.print(f"[red]{err}[/red]")
             return True
-
+# dim是灰色打印.
         self.console.print(f"[dim]Launching skill: {payload.get('commandName', skill_name)}[/dim]")
         meta_parts: list[str] = []
         loaded = payload.get("loadedFrom")
@@ -932,7 +932,7 @@ class ClawdREPL:
             self.console.print("[red]Skill produced empty prompt[/red]")
             return True
 
-        self.chat(prompt)
+        self.chat(prompt)# 最后大模型调用兜底.
         return True
 
     def show_help(self):
@@ -965,7 +965,7 @@ class ClawdREPL:
 """
         self.console.print(Markdown(help_text))
 
-    def _handle_skill_command(self) -> None:
+    def _handle_skill_command(self) -> None: # 处理/skills指令. 列出所有可用的技能.
         """Handle /skill command - list all available skills."""
         try:
             from src.skills.loader import get_all_skills
@@ -985,12 +985,12 @@ class ClawdREPL:
             by_source: dict[str, list] = defaultdict(list)
             for s in skills:
                 loaded = getattr(s, "loaded_from", "") or "unknown"
-                by_source[loaded].append(s)
+                by_source[loaded].append(s) # 按来源分组.
 
             self.console.print(f"\n[bold]Available Skills ({len(skills)}):[/bold]")
             for source in sorted(by_source.keys()):
                 source_skills = by_source[source]
-                self.console.print(f"\n[cyan]{source.title()} Skills:[/cyan]")
+                self.console.print(f"\n[cyan]{source.title()} Skills:[/cyan]") # 每一类分别打印.
                 for s in source_skills:
                     desc = (getattr(s, "description", None) or "").strip()
                     user_invocable = getattr(s, "user_invocable", True)
