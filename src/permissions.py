@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class ToolPermissionContext:
-    deny_names: frozenset[str] = field(default_factory=frozenset)
+    deny_names: frozenset[str ] = field(default_factory=frozenset)
     deny_prefixes: tuple[str, ...] = ()
 
     @classmethod

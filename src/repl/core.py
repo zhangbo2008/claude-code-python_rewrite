@@ -1003,6 +1003,7 @@ class ClawdREPL:
             self.console.print(f"[red]Error loading skills: {e}[/red]")
 
     def _is_recoverable_tool_error(self, tool_name: str, tool_output) -> bool:
+        #根据错误信息,判断是否是可恢复的错误.
         if not isinstance(tool_name, str):
             return False
         if not isinstance(tool_output, dict):
@@ -1014,7 +1015,7 @@ class ClawdREPL:
         e = err.lower()
         if name == "read" and e.startswith("file not found:"):
             p = err.split(":", 2)[-1].strip()
-            if "/.clawd/skills/" in p or "\\.clawd\\skills\\" in p or "/.claude/skills/" in p or "\\.claude\\skills\\" in p:
+            if "/.clawd/skills/" in p or "\\.clawd\\skills\\" in p or "/.claude/skills/" in p or "\\.claude\\skills\\" in p: # 在技能目录中查找到了. 那么就可以恢复.
                 return True
         return False
 
@@ -1039,7 +1040,7 @@ class ClawdREPL:
             messages = [{"role": "system", "content": style_prompt}, *messages]
         return messages, {}
 
-    def _should_try_direct_stream(self, user_input: str) -> bool:
+    def _should_try_direct_stream(self, user_input: str) -> bool:# 是否直接问大模型.
         if not self.stream:
             return False
         text = user_input.strip().lower()
@@ -1062,6 +1063,7 @@ class ClawdREPL:
         return not any(marker in text for marker in code_task_markers)
 
     def _stream_direct_response(self, on_text_chunk=None) -> str | None:
+        # 直接问大模型,并返回流式响应.
         streamed_chunks: list[str] = []
 
         try:
@@ -1083,11 +1085,11 @@ class ClawdREPL:
             return None
 
         full_response = "".join(streamed_chunks)
-        self.session.conversation.add_assistant_message(full_response)
+        self.session.conversation.add_assistant_message(full_response) # 把回复的内容添加到session里面.作为历史问答记录保存.
         return full_response
 
-    def _get_last_assistant_text(self) -> str | None:
-        for message in reversed(self.session.conversation.messages):
+    def _get_last_assistant_text(self) -> str | None:# 获取最近一次助手回复.
+        for message in reversed(self.session.conversation.messages): # 从最近一次回复开始,往前遍历.
             if message.role != "assistant":
                 continue
             content = message.content
@@ -1123,7 +1125,7 @@ class ClawdREPL:
             max_turns: Maximum number of tool call turns (default 20, higher for complex commands).
         """
         # Add user message
-        self.session.conversation.add_user_message(user_input)
+        self.session.conversation.add_user_message(user_input) # 把用户的问题添加到session里面.作为历史问答记录保存.
 
         try:
             self.console.print("\n[bold]Assistant[/bold]")
@@ -1184,9 +1186,9 @@ class ClawdREPL:
                     return
 
             # Use agent loop with tools for any provider that supports it
-            self._current_status = self.console.status("[dim]Thinking...[/dim]", spinner="dots")
+            self._current_status = self.console.status("[dim]Thinking...[/dim]", spinner="dots")#控制台显示思考中.... ...在旋转.
             with self._current_status:
-                result = run_agent_loop(
+                result = run_agent_loop(# 核心逻辑, llm->tool->llm->tool循环.直到没有工具调用为止.
                     conversation=self.session.conversation,
                     provider=self.provider,
                     tool_registry=self.tool_registry,
@@ -1199,7 +1201,7 @@ class ClawdREPL:
                 )
             self._current_status = None
 
-            # Record usage to cost tracker
+            # Record usage to cost tracker 记录成本.token使用量.
             if result.usage:
                 input_tokens = result.usage.get("input_tokens", 0)
                 output_tokens = result.usage.get("output_tokens", 0)
@@ -1210,7 +1212,7 @@ class ClawdREPL:
                     )
                     # Also update command context for new commands
                     if hasattr(self, 'command_context') and self.command_context:
-                        self.command_context.cost_tracker = self.cost_tracker
+                        self.command_context.cost_tracker = self.cost_tracker    
 
             if self.stream and stream_started:
                 self.console.print()
@@ -1261,7 +1263,7 @@ class ClawdREPL:
         self.console.print()
 
         # Select provider
-        provider = Prompt.ask(
+        provider = Prompt.ask(# 用户选择一个provideer,选择之后赋值给变量provider.
             "Select LLM provider",
             choices=provider_names,
             default=self.provider_name if self.provider_name in provider_names else "anthropic"
@@ -1300,7 +1302,7 @@ class ClawdREPL:
 
         self.console.print(f"\n[green]✓ {provider.upper()} API Key updated successfully![/green]\n")
 
-        # Reinitialize provider
+        # Reinitialize provider # 从新读取provider配置.
         from src.config import get_provider_config
         from src.providers import get_provider_class
 
@@ -1340,7 +1342,7 @@ class ClawdREPL:
         self.console.print(f"[dim]Provider: {loaded_session.provider}, Model: {loaded_session.model}[/dim]")
         self.console.print(f"[dim]Messages: {len(loaded_session.conversation.messages)}[/dim]")
 
-        # Show conversation history
+        # Show conversation history # 打印历史问答记录的最后5条.
         if loaded_session.conversation.messages:
             self.console.print("\n[bold]Conversation History:[/bold]")
             for msg in loaded_session.conversation.messages[-5:]:  # Show last 5 messages

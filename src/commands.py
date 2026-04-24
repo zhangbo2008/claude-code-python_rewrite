@@ -72,11 +72,11 @@ def find_commands(query: str, limit: int = 20) -> list[PortingModule]:
     return matches[:limit]
 
 
-def execute_command(name: str, prompt: str = '') -> CommandExecution:
+def execute_command(name: str, prompt: str = '') -> CommandExecution:# 执行镜像的命令用这个.
     module = get_command(name)
     if module is None:
         return CommandExecution(name=name, source_hint='', prompt=prompt, handled=False, message=f'Unknown mirrored command: {name}')
-    action = f"Mirrored command '{module.name}' from {module.source_hint} would handle prompt {prompt!r}."
+    action = f"Mirrored command '{module.name}' from {module.source_hint} would handle prompt {prompt!r}." # 把这个指令的执行交给mirror command进行执行.
     return CommandExecution(name=module.name, source_hint=module.source_hint, prompt=prompt, handled=True, message=action)
 
 

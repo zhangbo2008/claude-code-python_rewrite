@@ -10,12 +10,33 @@
 
 入口是
 src\cli.py  199行会先读取大模型提供商.-->config.py:59 读取配置文件, 拿到token之后base64解码, 得到api key. 之后进入core.py 代码执行618行run函数.
+    他的run函数
 
 看src\repl\core.py 
 ClawdREPL类是 命令行交互的类.
 618行是run函数, 运行REPL.
 
 src\command_system\registry.py   命令的注册器, 也是管理器.可以注册命令, 查找命令, 列出命令等.这套代码使用命令执行时候, 先去这个命令管理器里面去搜索命令, 然后再执行命令.
+
+src\bootstrap_graph.py 项目的说明文档.
+
+src\commands.py 执行镜像的命令. 执行镜像仓库ts的代码.
+
+
+src\context.py 路径的上下文. PortContext，专门用来统一存放和管理一组相关的路径、文件数量、状态信息。
+
+src\permissions.py 判断工具是否可以使用.
+
+src\port_manifest.py 文件数量统计,清单.
+
+src\repl.py: clawd codex 的repl. 另一种模仿codex的repl
+
+
+
+src\runtime.py 运行时环境的上下文.
+
+src\token_estimation.py token使用量的记录.
+
 
 
 

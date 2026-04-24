@@ -25,7 +25,7 @@ class ToolPool:
         return '\n'.join(lines)
 
 
-def assemble_tool_pool(
+def assemble_tool_pool(# 返回所有的工具名
     simple_mode: bool = False,
     include_mcp: bool = True,
     permission_context: ToolPermissionContext | None = None,
