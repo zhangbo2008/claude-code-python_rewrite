@@ -11,7 +11,7 @@ import shlex
 from typing import Sequence
 
 
-def substitute_arguments(
+def substitute_arguments( # 输入content, 和args进行字符串替换.
     content: str,
     args: str,
     arg_names: Sequence[str] | None = None,

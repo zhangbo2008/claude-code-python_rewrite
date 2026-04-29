@@ -365,7 +365,7 @@ def context_command_call(args: str, context: CommandContext) -> LocalCommandResu
         traceback.print_exc()
         return LocalCommandResult(type="text", value=f"Context analysis failed: {e}")
 
-
+# 进行异步压缩上下文.
 async def _compact_async(args: str, context: CommandContext) -> LocalCommandResult:
     """
     Async implementation of compact command.
@@ -447,13 +447,13 @@ def compact_command_call(args: str, context: CommandContext) -> LocalCommandResu
     except RuntimeError:
         # No running event loop — safe to use asyncio.run
         try:
-            return asyncio.run(_compact_async(args, context))
+            return asyncio.run(_compact_async(args, context))#在同步的上下文中才能使用asyncio.run()函数
         except Exception as e:
             import traceback
             traceback.print_exc()
             return _sync_compact_fallback(context)
 
-
+# 同步的方式对上下文进行压缩.
 def _sync_compact_fallback(context: CommandContext) -> LocalCommandResult:
     """Synchronous fallback when async provider is not available."""
     if not hasattr(context.conversation, "messages"):

@@ -27,7 +27,7 @@ from .messages import (
 
 logger = logging.getLogger(__name__)
 
-# Maximum output tokens for the summary model
+# Maximum output tokens for the summary model # 压缩后最大输出token数
 COMPACT_MAX_OUTPUT_TOKENS = 4096
 
 # No-tools preamble prepended to the summary prompt
@@ -77,7 +77,7 @@ async def compact_conversation(
     Compact a conversation by summarizing older messages.
 
     This is the Python equivalent of the TypeScript compactConversation().
-    It is NOT a 1:1 port — it omits features unavailable in a Python CLI:
+    It is NOT a 1:1 port — it omits features unavailable in a Python CLI: 并不是ts版本的百分百移植.
     - Forked agent with cache sharing (no subprocess isolation in Python REPL)
     - Session memory (no disk-backed session memory extraction)
     - Reactive compact (no background compaction agent)
@@ -94,7 +94,7 @@ async def compact_conversation(
         CompactResult with boundary, summary, and metadata
     """
     # Step 1: Get messages after the last boundary (skip already-summarized)
-    messages = get_messages_after_boundary(conversation.messages)
+    messages = get_messages_after_boundary(conversation.messages) # 获取所有未压缩的消息
 
     if len(messages) < 2:
         raise ValueError("Not enough messages to compact.")
@@ -133,7 +133,7 @@ async def compact_conversation(
     # Step 5: Call the LLM to generate summary
     summary_text = ""
     try:
-        response = await provider.chat_async(
+        response = await provider.chat_async( # 尝试异步调用, 实际上没走这部分逻辑.
             messages=summary_request_messages,
             tools=None,  # No tools during compaction
             model=model,
@@ -143,7 +143,7 @@ async def compact_conversation(
     except Exception as e:
         # Try sync fallback
         try:
-            response = provider.chat(
+            response = provider.chat(# 调用大模型进行压缩.
                 messages=summary_request_messages,
                 tools=None,
                 model=model,

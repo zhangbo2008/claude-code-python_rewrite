@@ -27,7 +27,7 @@ class CommandAvailability(Enum):
 
 
 @dataclass(frozen=True)
-class CompactionResult:
+class CompactionResult: # 压缩结果.
     """Result data from a compaction operation."""
     pre_compact_count: int = 0
     post_compact_count: int = 0
@@ -37,7 +37,7 @@ class CompactionResult:
 
 
 @dataclass(frozen=True)
-class LocalCommandResult:
+class LocalCommandResult: # 本地命令执行结果.
     """Result of a local command execution."""
     type: str = "text"  # "text" | "compact" | "skip"
     value: str = ""
@@ -46,7 +46,7 @@ class LocalCommandResult:
 
 
 @dataclass
-class CommandContext:
+class CommandContext: # 命令上下文.
     """Context passed to command execution."""
     workspace_root: Path
     cwd: Path
@@ -61,7 +61,7 @@ LocalCommandCall = Callable[[str, CommandContext], LocalCommandResult]
 
 
 @dataclass(frozen=True)
-class CommandBase:
+class CommandBase: # 命令基础类.
     """Base class for all commands."""
     name: str
     description: str
@@ -91,7 +91,7 @@ class CommandBase:
 
 
 @dataclass(frozen=True)
-class PromptCommand(CommandBase):
+class PromptCommand(CommandBase): # 提示词命令.
     """A command that expands to prompt content."""
     progress_message: str = ""
     content_length: int = 0

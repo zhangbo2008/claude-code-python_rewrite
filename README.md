@@ -38,15 +38,18 @@ src\runtime.py 运行时环境的上下文.
 src\token_estimation.py token使用量的记录.
 
 
+剩下的是src里面文件夹部分. 都是模块部分.被上面的core.py调用.
+
+
+src\agent\conversation.py  用户对话类.用来记录一次对话里面的信息存储. 存到内存.
+src\agent\session.py       用户对话的磁盘保存.  存到硬盘.
 
 
 
 
-
-
-
-
-
+src\command_system\engine.py 命令执行的引擎.
+src\command_system\registry.py 命令注册器. 命令的添加删除查询.
+src\command_system\types.py 一种命令是提示词命令(用参数替换拼接完提示词之后给大模型), 一种是本地命令.
 
 
 

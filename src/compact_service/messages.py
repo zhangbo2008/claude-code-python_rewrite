@@ -16,7 +16,7 @@ from ..agent.conversation import Message, TextContentBlock
 
 
 @dataclass
-class CompactBoundaryMetadata:
+class CompactBoundaryMetadata:# 设置压缩边界标识符.
     """Metadata stored inside a compact boundary marker."""
     trigger: str = "manual"  # "manual" | "auto"
     pre_compact_token_count: int = 0
@@ -47,21 +47,21 @@ def create_compact_boundary_message(
         user_context=user_context,
         messages_summarized=messages_summarized,
         pre_compact_discovered_tools=discovered_tools or [],
-    )
+    ) # 先创建这个标识符的元数据
     content = TextContentBlock(
         type="text",
         text=f"[COMPACT BOUNDARY: {trigger}] metadata={_serialize_metadata(metadata)}",
-    )
-    msg = Message(
+    )# 元数据进行序列化,之后添加到内容中.
+    msg = Message(# 内容再嵌入消息中.
         role="system",
         content=[content],
         timestamp=datetime.now().isoformat(),
     )
     # Mark as internal so it gets filtered from API messages
-    msg._is_internal = True  # type: ignore[attr-defined]
+    msg._is_internal = True  # type: ignore[attr-defined] # 这行设置为内部消息,表示这是压缩后的上下文.
     return msg
 
-
+# 检测上下文压缩标志. 如果msg具有is_internal,那么就返回True.
 def is_compact_boundary_message(msg: Message) -> bool:
     """Check if a message is a compact boundary marker."""
     return getattr(msg, "_is_internal", False) and msg.role == "system"

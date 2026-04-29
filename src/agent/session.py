@@ -23,10 +23,10 @@ class Session:
 
     def save(self):
         """Save session to disk."""
-        session_dir = Path.home() / ".clawd" / "sessions"
+        session_dir = Path.home() / ".clawd" / "sessions" # 读取用户的sessions目录.
         session_dir.mkdir(parents=True, exist_ok=True)
 
-        session_file = session_dir / f"{self.session_id}.json"
+        session_file = session_dir / f"{self.session_id}.json" # 根据sessionid读取.
 
         session_data = {
             "session_id": self.session_id,
@@ -38,14 +38,15 @@ class Session:
         }
 
         with open(session_file, 'w') as f:
-            json.dump(session_data, f, indent=2)
+            json.dump(session_data, f, indent=2)# session_data写入文件.
 
         self.updated_at = datetime.now().isoformat()
 
     @classmethod
     def load(cls, session_id: str) -> Optional['Session']:
         """Load session from disk."""
-        session_file = Path.home() / ".clawd" / "sessions" / f"{session_id}.json"
+        session_file = Path.home() / ".clawd" / "sessions" / \
+            f"{session_id}.json"
 
         if not session_file.exists():
             return None

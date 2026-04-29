@@ -32,7 +32,8 @@ class ToolResultContentBlock:
     is_error: bool = False
 
 
-ContentBlock = Union[TextContentBlock, ToolUseContentBlock, ToolResultContentBlock]
+ContentBlock = Union[TextContentBlock,
+                     ToolUseContentBlock, ToolResultContentBlock]
 
 
 @dataclass
@@ -87,9 +88,10 @@ class Conversation:
                 api_messages.append({"role": msg.role, "content": msg.content})
             else:
                 content_blocks = []
-                for block in msg.content:
+                for block in msg.content:  # 是否信息是被类封装起来的.进行解开.每一个放contentblocks里面.
                     if isinstance(block, TextContentBlock):
-                        content_blocks.append({"type": "text", "text": block.text})
+                        content_blocks.append(
+                            {"type": "text", "text": block.text})
                     elif isinstance(block, ToolUseContentBlock):
                         content_blocks.append({
                             "type": "tool_use",
@@ -104,7 +106,8 @@ class Conversation:
                             "content": block.content,
                             "is_error": block.is_error
                         })
-                api_messages.append({"role": msg.role, "content": content_blocks})
+                api_messages.append(
+                    {"role": msg.role, "content": content_blocks})
         return api_messages
 
     def clear(self):
@@ -112,7 +115,7 @@ class Conversation:
         self.messages.clear()
 
     def to_dict(self) -> dict:
-        """Serialize conversation."""
+        """Serialize conversation."""  # 跟上面类似.
         messages_data = []
         for msg in self.messages:
             if isinstance(msg.content, str):
@@ -121,7 +124,8 @@ class Conversation:
                 content_data = []
                 for block in msg.content:
                     if isinstance(block, TextContentBlock):
-                        content_data.append({"type": "text", "text": block.text})
+                        content_data.append(
+                            {"type": "text", "text": block.text})
                     elif isinstance(block, ToolUseContentBlock):
                         content_data.append({
                             "type": "tool_use",
@@ -149,7 +153,7 @@ class Conversation:
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Conversation':
-        """Deserialize conversation."""
+        """Deserialize conversation."""  # 从字典恢复.
         conv = cls(max_history=data.get("max_history", 100))
         for msg_data in data.get("messages", []):
             content = msg_data["content"]
@@ -160,7 +164,8 @@ class Conversation:
                 for block_data in content:
                     block_type = block_data.get("type")
                     if block_type == "text":
-                        msg_content.append(TextContentBlock(type="text", text=block_data.get("text", "")))
+                        msg_content.append(TextContentBlock(
+                            type="text", text=block_data.get("text", "")))
                     elif block_type == "tool_use":
                         msg_content.append(ToolUseContentBlock(
                             type="tool_use",

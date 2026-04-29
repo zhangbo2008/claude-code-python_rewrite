@@ -141,7 +141,7 @@ def load_skill_from_directory(
     return [skill_to_prompt_command(skill) for skill in skills]
 
 
-async def execute_skill_command(
+async def execute_skill_command(# 这个是skill执行函数, 就是参数替换, 目前并没使用.
     command: PromptCommand,
     args: str,
     context: Any,

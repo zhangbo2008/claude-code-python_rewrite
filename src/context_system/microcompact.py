@@ -85,10 +85,10 @@ def strip_images_from_messages(messages: list[dict[str, Any]]) -> list[dict[str,
             block_type = block.get("type", "")
             if block_type == "image":
                 changed = True
-                new_content.append({"type": "text", "text": "[image]"})
+                new_content.append({"type": "text", "text": "[image]"}) # 替换为图片占位符, 不包含图片内容
             elif block_type == "document":
                 changed = True
-                new_content.append({"type": "text", "text": "[document]"})
+                new_content.append({"type": "text", "text": "[document]"}) 
             elif block_type == "tool_result" and isinstance(block.get("content"), list):
                 # Strip nested images/documents from tool_result content
                 new_tool_content: list[Any] = []
@@ -120,7 +120,7 @@ def microcompact_messages(
     messages: list[dict[str, Any]],
     keep_recent: int = 3,
 ) -> tuple[list[dict[str, Any]], int]:
-    """
+    """ # 快速压缩messages的方法.
     Lightweight compact of old tool results.
 
     Clears content from compactable tool results beyond the most recent
@@ -141,9 +141,9 @@ def microcompact_messages(
                     and block.get("type") == "tool_use"
                     and is_compactable_tool(block.get("name", ""))
                 ):
-                    compactable_ids.append(block.get("id", ""))
+                    compactable_ids.append(block.get("id", ""))  # 把工具调用的id都记录下来.
 
-    # Keep the last N compactable tool results
+    # Keep the last N compactable tool results # 保留最近的keep_recent个工具调用结果
     if len(compactable_ids) <= keep_recent:
         return list(messages), 0
 
@@ -169,7 +169,7 @@ def microcompact_messages(
 
         new_content: list[Any] = []
         changed = False
-        for block in content:
+        for block in content: # 根据刚才得到的保存工具,清除工具的id, 进行message的压缩.
             if (
                 isinstance(block, dict)
                 and block.get("type") == "tool_result"
@@ -179,7 +179,7 @@ def microcompact_messages(
                 saved = count_tool_result_tokens(block)
                 tokens_saved += saved
                 changed = True
-                new_content.append({**block, "content": CLEARED_MESSAGE})
+                new_content.append({**block, "content": CLEARED_MESSAGE}) # 清除过期工具调用的结果.
             else:
                 new_content.append(block)
 

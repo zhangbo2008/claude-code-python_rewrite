@@ -154,7 +154,7 @@ def count_message_breakdown_tokens(
     return breakdown
 
 
-def analyze_context(
+def analyze_context(# 分析整个上下文token使用情况.
     conversation_api_messages: list[dict[str, Any]],
     model: str,
     system_prompt: str,

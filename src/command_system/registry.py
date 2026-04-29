@@ -13,7 +13,7 @@ from .types import Command, CommandBase, get_command_name
 
 
 @dataclass
-class CommandRegistry:
+class CommandRegistry:# 命令注册器. 一种是命令,一种是别名.
     """Registry for commands."""
 
     _commands: dict[str, Command] = field(default_factory=dict)

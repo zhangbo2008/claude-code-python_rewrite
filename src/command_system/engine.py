@@ -89,7 +89,7 @@ class CommandResult:
 
 @dataclass
 class CommandEngine:
-    """Command execution engine."""
+    """Command execution engine."""# 命令执行的引擎.
 
     registry: CommandRegistry
     workspace_root: Path
@@ -137,7 +137,7 @@ class CommandEngine:
                 f"Command {command_name} is disabled",
             )
 
-        # Execute based on type
+        # Execute based on type 根据命令类型执行不同的操作.
         result: CommandResult
         if command.command_type == CommandType.LOCAL:
             result = await self._execute_local(command, args)
@@ -149,7 +149,7 @@ class CommandEngine:
                 f"Unknown command type: {command.command_type}",
             )
 
-        # Run hooks
+        # Run hooks 运行命令执行钩子. 钩子是在命令执行后执行的一个脚本.
         for hook in self._command_hooks:
             try:
                 hook(command_name, result)
@@ -217,7 +217,7 @@ class CommandEngine:
             self._command_hooks.remove(hook)
 
 
-def create_command_context(
+def create_command_context(# 创建命令上下文.
     workspace_root: str | Path,
     conversation: Any = None,
     cost_tracker: Any = None,
